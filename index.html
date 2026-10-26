@@ -1,327 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Jisu</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <style>
-        /* --- Basic Styling --- */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Press+Start+2P', cursive;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #3498db; /* A pleasant sky blue */
-            color: white;
-            text-align: center;
-        }
-        
-        /* --- Game Container --- */
-        .game-container {
-            border: 8px solid #2c3e50;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2), 0 6px 6px rgba(0,0,0,0.25);
-            overflow: hidden; /* Ensures canvas corners are rounded */
-        }
-        
-        /* --- Canvas Styling --- */
-        canvas {
-            display: block; /* Removes any default spacing below the canvas */
-            background-color: #87CEEB; /* Sky blue background for the game */
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10182d">
+<title>Flappy Jisu — Sky Run</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+:root{--ink:#f7f8ff;--muted:#b7c3e0;--glass:rgba(13,23,47,.72);--line:rgba(255,255,255,.16);--accent:#b9f36a;--cyan:#83e7ff}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#10182d;color:var(--ink);font-family:'DM Sans',sans-serif}body{min-height:100svh;overflow-x:hidden}
+button{font:inherit;cursor:pointer;touch-action:manipulation}button:focus-visible{outline:3px solid var(--cyan);outline-offset:4px}
+.app{min-height:100svh;position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 75% 10%,#324b7d 0%,transparent 42%),linear-gradient(150deg,#111a32,#172c49 60%,#10182d)}
+.ambient{position:absolute;inset:0;pointer-events:none;z-index:-1;overflow:hidden}.ambient:before,.ambient:after{content:"";position:absolute;border-radius:50%;filter:blur(2px);opacity:.22}.ambient:before{width:36rem;height:36rem;right:-12rem;top:4rem;background:#7bdcff}.ambient:after{width:28rem;height:28rem;left:-12rem;bottom:-12rem;background:#a2f86e}
+.topbar{max-width:1180px;margin:auto;padding:22px clamp(18px,4vw,48px);display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{display:flex;align-items:center;gap:12px;font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-.04em;font-size:1.12rem}.brand-mark{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#d8ff9c,#8fe1a5);color:#17253c;box-shadow:0 8px 25px #a4ed7933;font-size:19px}
+.top-actions{display:flex;gap:9px}.icon-btn{border:1px solid var(--line);color:var(--ink);background:#ffffff0d;width:43px;height:43px;border-radius:14px;display:grid;place-items:center;transition:.2s}.icon-btn:hover{background:#ffffff1b;transform:translateY(-1px)}
+main{max-width:1180px;margin:0 auto;padding:clamp(8px,2vw,24px) clamp(18px,4vw,48px) 36px}
+.hero{display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(20px,4vw,60px);align-items:center;min-height:min(690px,calc(100svh - 110px))}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid #d9f7aa3b;background:#d9f7aa10;color:#d9f7aa;padding:8px 12px;border-radius:999px;font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(3.5rem,7.4vw,6.7rem);line-height:.91;letter-spacing:-.075em;margin:24px 0 20px;font-weight:700}h1 span{display:block;color:var(--accent)}.intro{font-size:clamp(1rem,1.35vw,1.12rem);line-height:1.75;color:var(--muted);max-width:490px;margin:0 0 28px}
+.hero-buttons{display:flex;flex-wrap:wrap;gap:12px}.primary,.secondary{border-radius:16px;padding:15px 22px;min-height:54px;font-weight:800;transition:transform .18s,box-shadow .18s}.primary{border:0;color:#152039;background:linear-gradient(135deg,#d7ff9b,#9be7a6);box-shadow:0 12px 32px #a9ed7c27;display:flex;align-items:center;justify-content:center;gap:12px}.primary:hover{transform:translateY(-2px);box-shadow:0 16px 36px #a9ed7c38}.secondary{border:1px solid var(--line);background:#ffffff0a;color:var(--ink)}.secondary:hover{background:#ffffff17}
+.stats{display:flex;gap:28px;margin-top:36px;flex-wrap:wrap}.stat strong{display:block;font-family:'Space Grotesk',sans-serif;font-size:1.45rem}.stat span{color:var(--muted);font-size:.8rem}
+.art-stage{position:relative;min-width:0;min-height:470px;display:grid;place-items:center}.art-glow{position:absolute;width:88%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#93dbff33,transparent 68%);filter:blur(7px)}
+.hero-art{position:relative;width:min(100%,560px);aspect-ratio:1/1.05;border-radius:30px;overflow:hidden;border:1px solid #ffffff1c;box-shadow:0 30px 90px #0005;transform:rotate(1.5deg);background:linear-gradient(145deg,#314c71,#17233e)}
+.hero-art:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#07132605 30%,#08152bc9 100%);pointer-events:none}
+.hero-art img{width:100%;height:100%;object-fit:cover;display:block}.art-label{position:absolute;z-index:1;bottom:24px;left:24px;right:24px;display:flex;justify-content:space-between;align-items:end;gap:14px}.art-label strong{font-family:'Space Grotesk';font-size:clamp(1.2rem,2.5vw,1.8rem);display:block}.art-label small{color:#d4def4}.floating-tag{position:absolute;z-index:2;top:10%;right:-1%;background:#17233e;border:1px solid #ffffff24;border-radius:18px;padding:13px 16px;box-shadow:0 15px 40px #0004;transform:rotate(5deg)}.floating-tag strong{display:block;color:var(--accent);font-size:1.05rem}.floating-tag span{font-size:.75rem;color:var(--muted)}
+.how{margin:14px 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.how-card{padding:18px;border:1px solid var(--line);border-radius:18px;background:#ffffff08;display:flex;gap:12px;align-items:flex-start}.how-card b{display:block;font-size:.9rem;margin-bottom:5px}.how-card p{margin:0;color:var(--muted);font-size:.82rem;line-height:1.55}.step{flex:0 0 30px;height:30px;border-radius:10px;background:#b9f36a18;color:var(--accent);display:grid;place-items:center;font-weight:800}
+footer{max-width:1180px;margin:auto;padding:10px clamp(18px,4vw,48px) 24px;color:#8292b4;font-size:.78rem;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+/* Game layer */
+.game-layer{position:fixed;inset:0;z-index:10;background:#081226f5;display:none;align-items:center;justify-content:center;padding:clamp(8px,2vw,24px);backdrop-filter:blur(16px)}
+.game-layer.active{display:flex}.game-shell{width:min(100%,1000px);height:min(92svh,760px);display:flex;flex-direction:column;gap:12px;min-height:0}
+.game-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.game-brand{font-family:'Space Grotesk';font-weight:700}.game-controls{display:flex;gap:8px}.small-btn{border:1px solid var(--line);background:#ffffff0c;color:var(--ink);border-radius:12px;padding:10px 13px;font-weight:700}
+.playfield{position:relative;flex:1;min-height:0;border:1px solid #ffffff24;border-radius:22px;overflow:hidden;background:#86d8f5;box-shadow:0 24px 90px #0007;touch-action:pan-y}
+canvas{width:100%;height:100%;display:block;touch-action:manipulation}
+.hud{position:absolute;top:15px;left:15px;right:15px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}.score-pill,.hint-pill{background:#07162e9c;border:1px solid #ffffff32;border-radius:14px;padding:10px 14px;backdrop-filter:blur(8px);text-shadow:0 2px 6px #0004}.score-pill span{display:block;font-size:.68rem;color:#c9d8ee;text-transform:uppercase;letter-spacing:.12em}.score-pill strong{font-family:'Space Grotesk';font-size:1.55rem}.hint-pill{font-size:.78rem;color:#e7f1ff}
+.overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:20px;background:#08152c59;text-align:center}.overlay.show{display:flex}.panel{width:min(100%,360px);border:1px solid #ffffff30;background:#101d35eF;backdrop-filter:blur(18px);border-radius:24px;padding:26px;box-shadow:0 24px 70px #0004}.panel h2{font-family:'Space Grotesk';font-size:clamp(1.8rem,5vw,2.6rem);letter-spacing:-.05em;margin:0 0 8px}.panel p{color:#c1cde3;line-height:1.55;margin:0 0 20px}.panel .primary{width:100%}.panel .secondary{width:100%;margin-top:9px}
+.game-bottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#9eacc8;font-size:.78rem}.kbd{display:inline-block;border:1px solid #ffffff35;border-radius:6px;padding:2px 6px;color:#e4eafa;margin:0 2px}
+@media(max-width:800px){.hero{grid-template-columns:1fr;min-height:0;padding-top:28px}.hero-copy{order:1}.art-stage{order:0;min-height:0}.hero-art{width:min(82%,420px);aspect-ratio:1.12/1}.floating-tag{right:4%;top:5%}h1{font-size:clamp(3.2rem,14vw,5.5rem);margin-top:18px}.intro{max-width:620px}.stats{margin-top:26px}.how{margin-top:34px}.topbar{padding-top:16px}.art-label{bottom:16px;left:16px;right:16px}}
+@media(max-width:520px){.brand{font-size:1rem}.brand-mark{width:34px;height:34px}.hero-art{width:92%;border-radius:22px}.art-stage{margin:0 -4px}.floating-tag{padding:10px 12px}.how{grid-template-columns:1fr}.how-card{padding:14px}.stats{gap:20px}.primary,.secondary{padding:14px 18px}.game-layer{padding:0}.game-shell{height:100svh;width:100%;gap:8px}.game-top{padding:10px 12px 0}.playfield{border-radius:14px;border-left:0;border-right:0}.game-bottom{padding:0 12px 10px}.hud{top:10px;left:10px;right:10px}.hint-pill{font-size:.7rem}.panel{padding:22px}.game-brand{font-size:.95rem}}
+@media(orientation:landscape) and (max-height:560px){.game-shell{height:100svh;width:min(100%,1100px)}.game-top{padding-top:4px}.game-bottom{padding-bottom:3px}.game-layer{padding:5px}.game-top,.game-bottom{min-height:28px}.small-btn{padding:6px 10px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Retro arcade pass: chunky borders, pixel typography, playful game-world UI */
+:root{--ink:#fff6d8;--muted:#c6d7bf;--accent:#ffdf55;--cyan:#8af5ff;--glass:#182c3b}
+*{image-rendering:auto}
+body{font-family:'VT323',monospace;font-size:21px;background:#142a3a}
+.app{background:#77cce5; color:#fff6d8}
+.ambient{background:linear-gradient(#78d2ec 0%,#b4edee 65%,#e5f6b5 65%,#e5f6b5 100%);z-index:-1}
+.ambient:before{width:130px;height:130px;right:12%;top:12%;background:#fff2a1;filter:none;opacity:1;box-shadow:0 0 0 12px #fff2a122}
+.ambient:after{width:100%;height:34%;left:0;bottom:0;border-radius:0;background:repeating-linear-gradient(135deg,#76bd68 0 22px,#68ae5e 22px 44px);filter:none;opacity:1}
+.topbar{max-width:1180px;padding-top:20px}.brand{font-family:'Press Start 2P',monospace;font-size:12px;letter-spacing:0;color:#19374a;text-shadow:2px 2px #ffffff77}.brand-mark{border-radius:4px;background:#ffdf55;color:#203849;box-shadow:4px 4px 0 #244b56;width:38px;height:38px}
+.icon-btn{border:3px solid #244b56;border-radius:4px;background:#fff4d2;color:#18384b;box-shadow:4px 4px 0 #244b56}
+main{max-width:1180px}.hero{min-height:unset;gap:24px;padding:18px 0 26px;align-items:center}
+.eyebrow{border:3px solid #254b58;background:#fff4d2;color:#254b58;border-radius:3px;letter-spacing:0;font-family:'Press Start 2P';font-size:9px;padding:10px;box-shadow:4px 4px 0 #254b58}
+.dot{background:#ff6c61;box-shadow:0 0 0 3px #ff6c6144}
+h1{font-family:'Press Start 2P',monospace;letter-spacing:-.08em;font-size:clamp(2rem,5.5vw,4.5rem);line-height:1.35;color:#203c4b;text-shadow:4px 4px 0 #fff4d2;margin:22px 0 14px}
+h1 span{color:#e95c4e;text-shadow:4px 4px 0 #fff4d2}
+.intro{font-family:'VT323',monospace;color:#214555;font-size:clamp(1.35rem,2vw,1.7rem);line-height:1.22;max-width:470px}
+.primary,.secondary{border:3px solid #203f4b;border-radius:3px;box-shadow:5px 5px 0 #203f4b;font-family:'Press Start 2P',monospace;font-size:10px;padding:16px 18px;min-height:54px}
+.primary{color:#203b4b;background:#ffdf55}.primary:hover{transform:translate(2px,2px);box-shadow:3px 3px 0 #203f4b}
+.secondary{background:#fff4d2;color:#203b4b}.secondary:hover{background:#fffbe9}
+.stats{gap:12px;margin-top:28px}.stat{background:#fff4d2;border:3px solid #254b58;box-shadow:4px 4px 0 #254b58;padding:10px 12px;min-width:105px}.stat strong{font-family:'Press Start 2P';font-size:12px;color:#e95c4e}.stat span{font-size:18px;color:#254b58}
+.art-stage{min-height:390px}.art-glow{display:none}.hero-art{border:5px solid #203f4b;border-radius:3px;box-shadow:8px 8px 0 #203f4b;transform:rotate(0);background:#77cce5;aspect-ratio:1/1.02}.hero-art:after{background:linear-gradient(180deg,transparent 50%,#102d3ac9)}.hero-art img{image-rendering:auto}.art-label{left:12px;right:12px;bottom:12px}.art-label strong{font-family:'Press Start 2P';font-size:13px;line-height:1.5}.art-label small{font-family:'Press Start 2P';font-size:8px;line-height:1.5}.floating-tag{right:-2%;top:3%;border:3px solid #203f4b;border-radius:3px;background:#ffdf55;color:#203b4b;box-shadow:4px 4px 0 #203f4b;transform:rotate(3deg)}.floating-tag strong{font-family:'Press Start 2P';font-size:10px;color:#203b4b}.floating-tag span{color:#203b4b;font-size:17px}
+.how{margin-top:6px}.how-card{background:#fff4d2;border:3px solid #254b58;border-radius:3px;box-shadow:4px 4px 0 #254b58;color:#254b58}.how-card b{font-family:'Press Start 2P';font-size:9px;line-height:1.7}.how-card p{font-size:18px;color:#315767;line-height:1.15}.step{border-radius:2px;background:#ffdf55;color:#203b4b;font-family:'Press Start 2P';font-size:11px}
+footer{color:#214555;font-size:17px}
+.game-layer{background:#163047f5}.game-shell{font-family:'VT323',monospace}.game-brand{font-family:'Press Start 2P';font-size:10px;line-height:1.8}.small-btn{border:3px solid #fff4d2;border-radius:3px;background:#203e4e;color:#fff4d2;font-family:'Press Start 2P';font-size:9px;box-shadow:3px 3px 0 #071723;padding:10px}
+.playfield{border:4px solid #fff4d2;border-radius:3px;box-shadow:7px 7px 0 #071723}
+.score-pill,.hint-pill{border:3px solid #fff4d2;border-radius:3px;background:#173748e8;font-family:'Press Start 2P';font-size:9px}.score-pill strong{font-family:'Press Start 2P';font-size:18px}.score-pill span{font-family:'VT323';font-size:17px;letter-spacing:0}
+.panel{border:4px solid #fff4d2;border-radius:3px;background:#173748f2;box-shadow:7px 7px 0 #071723;font-family:'VT323';width:min(100%,400px)}.panel h2{font-family:'Press Start 2P';font-size:clamp(16px,3vw,23px);line-height:1.7;letter-spacing:-.05em;color:#ffdf55}.panel p{font-size:23px;line-height:1.12;color:#e4efdb}.panel .primary,.panel .secondary{font-size:9px}
+.game-bottom{font-size:18px;color:#e3edda}.kbd{border-radius:2px;border:2px solid #fff4d2}
+@media(max-width:800px){.hero{padding-top:10px}.hero-art{width:min(84%,400px)}h1{font-size:clamp(1.8rem,7vw,3.5rem)}.art-stage{min-height:unset}.intro{font-size:23px}}
+@media(max-width:680px){.leaderboard-wrap{grid-template-columns:1fr!important}}
+@media(max-width:520px){.brand{font-size:9px}.hero-art{width:94%}.how{grid-template-columns:1fr}.stats{gap:9px}.stat{min-width:0;flex:1;padding:8px}.stat strong{font-size:10px}.primary,.secondary{font-size:9px}.game-top{gap:8px}.game-brand{font-size:8px}.small-btn{font-size:8px;padding:8px 7px}}
+
+</style>
 </head>
 <body>
-
-    <div class="game-container">
-        <canvas id="gameCanvas" width="320" height="480"></canvas>
+<div class="app">
+  <div class="ambient"></div>
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">✦</div><span>FLAPPY JISU</span></div>
+    <div class="top-actions">
+      <button class="icon-btn" id="soundToggle" aria-label="Toggle sound" title="Toggle sound">♫</button>
+      <button class="icon-btn" id="fullscreenHome" aria-label="Fullscreen" title="Fullscreen">⛶</button>
     </div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="dot"></span> A tiny bird. A big adventure.</div>
+        <h1>FLAPPY<span>JISU.</span></h1>
+        <p class="intro">Find your rhythm, thread the gaps, and see how far you can fly. Easy to pick up, tricky to master — one more run is always calling.</p>
+        <div class="hero-buttons">
+          <button class="primary" id="playButton">Play now <span aria-hidden="true">↗</span></button>
+          <button class="secondary" id="howButton">How to play</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong id="bestScore">0</strong><span>Personal best</span></div>
+          <div class="stat"><strong>∞</strong><span>One more try</span></div>
+          <div class="stat"><strong>1 TAP</strong><span>Simple controls</span></div>
+        </div>
+        <div class="player-entry" style="margin-top:22px;max-width:470px;background:#fff4d2;border:3px solid #254b58;box-shadow:5px 5px 0 #254b58;padding:14px;color:#203b4b">
+          <label for="playerName" style="display:block;font-family:'Press Start 2P';font-size:9px;line-height:1.8;margin-bottom:8px">PLAYER NAME</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input id="playerName" maxlength="18" autocomplete="nickname" placeholder="Enter your nickname..." style="min-width:0;flex:1;padding:12px;border:3px solid #254b58;border-radius:2px;background:#fffdf2;color:#203b4b;font:22px 'VT323',monospace">
+            <button class="secondary" id="saveName" style="min-height:0;padding:12px">Save</button>
+          </div>
+          <div id="nameStatus" style="font-size:17px;margin-top:7px;color:#315767">Pick a name to appear on the daily scoreboard.</div>
+        </div>
+      </div>
+      <div class="art-stage">
+        <div class="art-glow"></div>
+        <div class="hero-art">
+          <img src="https://i.ibb.co/BKL217V1/Whats-App-Image-2026-10-26-at-11-28-41-PM.jpg" alt="Both Flappy Jisu characters" fetchpriority="high">
+          <div class="art-label"><div><small>THE ADVENTURE BEGINS</small><strong>Ready to fly?</strong></div><span>✦</span></div>
+        </div>
+        <div class="floating-tag"><strong>SKY RUN</strong><span>Arcade mode · 01</span></div>
+      </div>
+    </section>
+    <section class="leaderboard-wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:10px 0 24px">
+      <div style="border:4px solid #254b58;background:#fff4d2;color:#203b4b;box-shadow:5px 5px 0 #254b58;padding:18px">
+        <div style="font-family:'Press Start 2P';font-size:11px;line-height:1.8">🏆 TODAY'S TOP FLIERS</div>
+        <div style="font-size:18px;color:#315767;margin:5px 0 12px">Scores reset at midnight UTC.</div>
+        <div id="leaderboard" aria-live="polite" style="font-size:19px;line-height:1.55">Connect the leaderboard backend to see today's players.</div>
+        <button class="secondary" id="refreshBoard" style="margin-top:12px;padding:10px;font-size:8px">Refresh scores</button>
+      </div>
+      <div style="border:4px dashed #254b58;background:#d8f2a8;color:#203b4b;box-shadow:5px 5px 0 #254b58;padding:18px;position:relative;overflow:hidden">
+        <div style="font-family:'Press Start 2P';font-size:11px;line-height:1.8">SECRET SKY NOTE</div>
+        <p style="font-size:22px;line-height:1.15;margin:12px 0">They say a golden bird sometimes flies through the clouds... flap at the right moment and you might spot something odd.</p>
+        <button class="secondary" id="secretButton" style="padding:10px;font-size:8px">Psst... try me</button>
+        <div id="secretMessage" style="font-size:20px;margin-top:10px;min-height:22px"></div>
+      </div>
+    </section>
+    <section class="how" id="howSection" aria-label="How to play">
+      <div class="how-card"><div class="step">1</div><div><b>Tap to flap</b><p>Click, tap, or press Space to give Jisu a lift.</p></div></div>
+      <div class="how-card"><div class="step">2</div><div><b>Find the gap</b><p>Fly between the obstacles and avoid the ground.</p></div></div>
+      <div class="how-card"><div class="step">3</div><div><b>Beat your best</b><p>Every obstacle passed adds one point. How far can you go?</p></div></div>
+    </section>
+  </main>
+  <footer><span>FLAPPY JISU · SKY RUN</span><span>Made for keyboard, mouse and touch</span></footer>
+</div>
 
-    <script>
-        // --- Canvas and Context ---
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // --- Game State Variables ---
-        let bird;
-        let pipes;
-        let score;
-        let gameState; // 'start', 'playing', 'gameOver'
-        let frame = 0;
-
-        // --- Game Configuration ---
-        const config = {
-            gravity: 0.3, 
-            lift: -7,     
-            pipeWidth: 52,
-            pipeGap: 150, 
-            pipeFrequency: 140,
-            birdX: 50,
-        };
-
-        // --- ASSET LOADING ---
-        const birdImg = new Image();
-        birdImg.src = 'https://i.postimg.cc/MGqhKJ3R/jisu.png';
-
-        const pipeTopImg = new Image();
-        pipeTopImg.src = 'https://i.postimg.cc/tCzcSM4B/joshi2.png';
-
-        const pipeBottomImg = new Image();
-        pipeBottomImg.src = 'https://i.postimg.cc/c4Nq53ML/joshi.png';
-        
-        const flapSound = new Audio();
-        flapSound.src = 'https://file.garden/aO5GCwcvoWAPE40D/chaya.mp3';
-
-        const failSound = new Audio();
-        failSound.src = 'https://file.garden/aO5GCwcvoWAPE40D/chayaa.mp3';
-
-        // --- BIRD OBJECT ---
-        class Bird {
-            constructor() {
-                this.y = canvas.height / 2;
-                this.x = config.birdX;
-                this.velocity = 0;
-                this.width = 40; // Adjusted for custom image
-                this.height = 40; // Adjusted for custom image
-                this.hasStarted = false; // Bird won't fall until the first flap
-            }
-
-            draw() {
-                ctx.drawImage(birdImg, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
-            }
-
-            update() {
-                if (!this.hasStarted) return; // Don't apply physics if game hasn't started
-                this.velocity += config.gravity;
-                this.y += this.velocity;
-
-                // Prevent bird from going off the top of the screen
-                if (this.y - this.height / 2 < 0) {
-                    this.y = this.height / 2;
-                    this.velocity = 0;
-                }
-            }
-
-            flap() {
-                if (!this.hasStarted) {
-                    this.hasStarted = true;
-                }
-                this.velocity = config.lift;
-                if(flapSound.src) flapSound.play().catch(e => console.error("Audio play failed:", e));
-            }
-        }
-
-        // --- PIPE OBJECT ---
-        class Pipe {
-            constructor() {
-                this.x = canvas.width;
-                this.width = config.pipeWidth;
-                this.gap = config.pipeGap;
-                // Randomize height of the top pipe
-                this.topPipeHeight = Math.random() * (canvas.height / 2.5) + 70; // Adjusted random range for fairness
-                this.bottomPipeY = this.topPipeHeight + this.gap;
-                this.passed = false;
-            }
-
-            draw() {
-                ctx.drawImage(pipeTopImg, this.x, 0, this.width, this.topPipeHeight);
-                ctx.drawImage(pipeBottomImg, this.x, this.bottomPipeY, this.width, canvas.height - this.bottomPipeY);
-            }
-
-            update() {
-                if (gameState !== 'playing') return; // Don't move pipes if not playing
-                this.x -= 1.5; // Pipes move slower
-            }
-        }
-
-        // --- Game Controls ---
-        function handleInput() {
-            if (gameState === 'playing') {
-                bird.flap();
-            } else if (gameState === 'start' || gameState === 'gameOver') {
-                resetGame();
-                gameState = 'playing';
-                // The first flap starts the physics, but the gameLoop starts immediately
-                bird.flap(); 
-                requestAnimationFrame(gameLoop);
-            }
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                handleInput();
-            }
-        });
-        canvas.addEventListener('mousedown', handleInput);
-        canvas.addEventListener('touchstart', handleInput);
-
-
-        // --- Collision Detection ---
-        function checkCollisions() {
-            // Ground collision
-            if (bird.y + bird.height / 2 > canvas.height) {
-                return true;
-            }
-
-            // Pipe collision
-            for (let pipe of pipes) {
-                // A smaller, more forgiving hitbox
-                const birdLeft = bird.x - bird.width / 2 + 15;
-                const birdRight = bird.x + bird.width / 2 - 15;
-                const birdTop = bird.y - bird.height / 2 + 15;
-                const birdBottom = bird.y + bird.height / 2 - 15;
-
-                const pipeLeft = pipe.x;
-                const pipeRight = pipe.x + pipe.width;
-                const pipeTop = pipe.topPipeHeight;
-                const pipeBottom = pipe.bottomPipeY;
-
-                if (
-                    birdRight > pipeLeft &&
-                    birdLeft < pipeRight &&
-                    (birdTop < pipeTop || birdBottom > pipeBottom)
-                ) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // --- Score Management ---
-        function updateScore() {
-            for (let pipe of pipes) {
-                if (pipe.x + pipe.width < bird.x && !pipe.passed) {
-                    score++;
-                    pipe.passed = true;
-                }
-            }
-        }
-
-        // --- Drawing Functions ---
-        function drawScore() {
-            ctx.fillStyle = 'white';
-            ctx.strokeStyle = '#2c3e50';
-            ctx.lineWidth = 3;
-            ctx.font = "30px 'Press Start 2P'";
-            ctx.textAlign = 'center';
-            ctx.fillText(score, canvas.width / 2, 50);
-            ctx.strokeText(score, canvas.width / 2, 50);
-        }
-
-        function drawStartScreen() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'white';
-            ctx.textAlign = 'center';
-            ctx.font = "24px 'Press Start 2P'";
-            ctx.fillText('Flappy Jisu', canvas.width / 2, canvas.height / 2 - 50);
-            ctx.font = "14px 'Press Start 2P'";
-            ctx.fillText('Click or Press Space', canvas.width / 2, canvas.height / 2);
-            ctx.fillText('to Start', canvas.width / 2, canvas.height / 2 + 20);
-        }
-
-        function drawGameOverScreen() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'white';
-            ctx.textAlign = 'center';
-            ctx.font = "24px 'Press Start 2P'";
-            ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 50);
-            ctx.font = "18px 'Press Start 2P'";
-            ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2);
-            ctx.font = "12px 'Press Start 2P'";
-            ctx.fillText('Click to Restart', canvas.width / 2, canvas.height / 2 + 50);
-        }
-
-        // --- Main Game Loop ---
-        function gameLoop() {
-            if (gameState !== 'playing') return;
-
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Only generate pipes if the game has started
-            if (bird.hasStarted && frame % config.pipeFrequency === 0) {
-                pipes.push(new Pipe());
-            }
-
-            for (let i = pipes.length - 1; i >= 0; i--) {
-                pipes[i].update();
-                pipes[i].draw();
-
-                if (pipes[i].x + config.pipeWidth < 0) {
-                    pipes.splice(i, 1);
-                }
-            }
-            
-            // Update and Draw Bird
-            bird.update();
-            bird.draw();
-
-            if (checkCollisions()) {
-                if(failSound.src) failSound.play().catch(e => console.error("Audio play failed:", e));
-                gameState = 'gameOver';
-                // Draw everything one last time to show the collision state
-                drawGameOverScreen();
-                return;
-            }
-            
-            updateScore();
-            drawScore();
-
-            frame++;
-            requestAnimationFrame(gameLoop);
-        }
-
-        // --- Game Initialization ---
-        function resetGame() {
-            if (failSound && !failSound.paused) {
-                failSound.pause();
-                failSound.currentTime = 0;
-            }
-            bird = new Bird();
-            pipes = [];
-            score = 0;
-            frame = 0;
-        }
-        
-        // --- Start the game ---
-        function init() {
-            gameState = 'start';
-            resetGame();
-            
-            let assetsLoaded = 0;
-            const totalAssets = 3;
-            const onAssetLoad = () => {
-                assetsLoaded++;
-                if (assetsLoaded === totalAssets) {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    drawStartScreen();
-                    bird.draw(); 
-                }
-            };
-            birdImg.onload = onAssetLoad;
-            pipeTopImg.onload = onAssetLoad;
-            pipeBottomImg.onload = onAssetLoad;
-
-            // Handle cases where images might be cached
-            if (birdImg.complete) onAssetLoad();
-            if (pipeTopImg.complete) onAssetLoad();
-            if (pipeBottomImg.complete) onAssetLoad();
-        }
-
-        init();
-    </script>
-
+<div class="game-layer" id="gameLayer" aria-hidden="true">
+  <div class="game-shell">
+    <div class="game-top">
+      <div class="game-brand">✦ FLAPPY JISU <span style="color:#9eacc8;font-weight:500">/ SKY RUN</span></div>
+      <div class="game-controls">
+        <button class="small-btn" id="pauseButton">Ⅱ Pause</button>
+        <button class="small-btn" id="soundGame">♫ Sound</button>
+        <button class="small-btn" id="exitButton">✕ Exit</button>
+      </div>
+    </div>
+    <div class="playfield" id="playfield">
+      <canvas id="gameCanvas" aria-label="Flappy Jisu game area"></canvas>
+      <div class="hud"><div class="score-pill"><span>Score · <b id="playerLabel">PLAYER</b></span><strong id="score">0</strong></div><div class="hint-pill" id="hint">Tap / click / Space to flap</div></div>
+      <div class="overlay show" id="startOverlay"><div class="panel"><h2>Ready, Jisu?</h2><p>Stay light, watch the gaps, and keep moving.</p><button class="primary" id="startRun">Start flying <span>↗</span></button><button class="secondary" id="backHome">Back to home</button></div></div>
+      <div class="overlay" id="pauseOverlay"><div class="panel"><h2>Take a breather</h2><p>Your run is paused. Ready when you are.</p><button class="primary" id="resumeButton">Resume flight</button><button class="secondary" id="restartPaused">Restart run</button></div></div>
+      <div class="overlay" id="overOverlay"><div class="panel"><h2>Nice try!</h2><p id="finalMessage">You scored 0 points.</p><button class="primary" id="retryButton">Fly again ↗</button><button class="secondary" id="homeFromOver">Back to home</button></div></div>
+    </div>
+    <div class="game-bottom"><span><span class="kbd">Space</span> / <span class="kbd">↑</span> flap · <span class="kbd">P</span> pause</span><span>Keep an eye on the gap ✦</span></div>
+  </div>
+</div>
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const canvas=$('gameCanvas'), ctx=canvas.getContext('2d',{alpha:false});
+// For a public shared leaderboard, add your Supabase project URL and anon key here.
+// The setup SQL is included in the accompanying README. Leaving these blank uses a local demo board.
+const SUPABASE_URL = 'https://ntruapoirpesdrdosfbf.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_0o2fE9JeoKYfbez9w-d9zA_FQxHAjPk';
+let playerName = '';
+try { playerName = (localStorage.getItem('flappyJisuPlayerName') || '').slice(0,18); } catch(e) {}
+$('playerName').value = playerName;
+$('playerLabel').textContent = playerName ? playerName.toUpperCase() : 'PLAYER';
+const layer=$('gameLayer'), field=$('playfield');
+const birdImg=new Image(); birdImg.crossOrigin='anonymous'; birdImg.src='https://i.postimg.cc/MGqhKJ3R/jisu.png';
+const pipeTopImg=new Image(); pipeTopImg.crossOrigin='anonymous'; pipeTopImg.src='https://i.postimg.cc/tCzcSM4B/joshi2.png';
+const pipeBottomImg=new Image(); pipeBottomImg.crossOrigin='anonymous'; pipeBottomImg.src='https://i.postimg.cc/c4Nq53ML/joshi.png';
+const flapSound=new Audio('https://file.garden/aO5GCwcvoWAPE40D/chaya.mp3'); flapSound.preload='none';
+const failSound=new Audio('https://file.garden/aO5GCwcvoWAPE40D/chayaa.mp3'); failSound.preload='none';
+let soundOn=true, state='home', raf=0, last=0, elapsed=0, score=0, best=0, pipes=[], particles=[], clouds=[], shake=0, flash=0;
+let W=320,H=480,dpr=1, scale=1, groundH=44, bird={x:70,y:220,v:0,rot:0,r:15,w:40,h:40,started:false};
+const CFG={gravity:1550,flap:-435,maxFall:650,pipeSpeed:145,pipeWidth:58,gap:166,spawn:1.55};
+try{best=Number(localStorage.getItem('flappyJisuBest')||0)}catch(e){} $('bestScore').textContent=best;
+function resize(){
+ const rect=field.getBoundingClientRect(); if(!rect.width||!rect.height)return;
+ W=rect.width;H=rect.height;dpr=Math.min(window.devicePixelRatio||1,2);
+ canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);
+ ctx.setTransform(dpr,0,0,dpr,0,0);
+ scale=Math.min(W/420,H/640);groundH=Math.max(35,H*.085);
+ bird.w=Math.max(34,Math.min(46,W*.105));bird.h=bird.w;
+ if(state==='home'||state==='ready') {bird.x=W*.22;bird.y=H*.45;}
+ if(!clouds.length)for(let i=0;i<8;i++)clouds.push({x:Math.random()*W,y:Math.random()*H*.72,s:.45+Math.random()*.9});
+ draw();
+}
+function cleanName(value){return String(value||'').replace(/[<>]/g,'').replace(/\s+/g,' ').trim().slice(0,18);}
+function localBoardKey(){return 'flappyJisuDailyBoard_'+new Date().toISOString().slice(0,10);}
+function readLocalBoard(){try{return JSON.parse(localStorage.getItem(localBoardKey())||'[]')}catch(e){return []}}
+function writeLocalBoard(board){try{localStorage.setItem(localBoardKey(),JSON.stringify(board.slice(0,10)))}catch(e){}}
+function renderBoard(board, isShared=false){
+ const el=$('leaderboard');
+ if(!board||!board.length){el.innerHTML='<div style="padding:8px 0">No scores yet. Be the first to fly!</div>';return;}
+ el.innerHTML=board.slice(0,10).map((r,i)=>`<div style="display:flex;justify-content:space-between;gap:8px;border-bottom:2px dashed #254b5833;padding:5px 0"><span>${['🥇','🥈','🥉'][i]||String(i+1)+'.'} ${escapeHtml(r.name||'Player')}</span><b>${Number(r.score)||0}</b></div>`).join('')+(isShared?'<div style="font-size:15px;color:#315767;margin-top:7px">LIVE · shared online</div>':'<div style="font-size:15px;color:#a44b3c;margin-top:7px">LOCAL PREVIEW · only on this device</div>');
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function loadBoard(){
+ if(SUPABASE_URL && SUPABASE_ANON_KEY){
+  try{
+   const url=SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/daily_scores?select=player_name,score,played_on&played_on=eq.'+new Date().toISOString().slice(0,10)+'&order=score.desc,created_at.asc&limit=10';
+   const res=await fetch(url,{headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY}});
+   if(!res.ok)throw new Error('Leaderboard request failed');
+   const rows=await res.json();renderBoard(rows.map(r=>({name:r.player_name,score:r.score})),true);return;
+  }catch(e){$('leaderboard').innerHTML='<div>Online board unavailable right now. Showing local scores instead.</div>';}
+ }
+ renderBoard(readLocalBoard(),false);
+}
+async function submitScore(){
+ const name=cleanName(playerName)||'Guest';
+ const date=new Date().toISOString().slice(0,10);
+ if(SUPABASE_URL && SUPABASE_ANON_KEY){
+  try{
+   const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/daily_scores',{
+    method:'POST',headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({player_name:name,score:score,played_on:date})
+   });
+   if(!res.ok)throw new Error('Score submission failed');
+   await loadBoard();return;
+  }catch(e){$('nameStatus').textContent='Could not send score online. Saving a local preview instead.';}
+ }
+ const board=readLocalBoard();board.push({name,score,played_on:date,at:Date.now()});
+ board.sort((a,b)=>b.score-a.score||a.at-b.at);
+ // keep the best score per nickname for this device's daily preview
+ const bestByName=new Map();for(const row of board){const k=String(row.name).toLowerCase();if(!bestByName.has(k)||row.score>bestByName.get(k).score)bestByName.set(k,row);}
+ const merged=[...bestByName.values()].sort((a,b)=>b.score-a.score||a.at-b.at).slice(0,10);writeLocalBoard(merged);renderBoard(merged,false);
+}
+$('saveName').addEventListener('click',()=>{
+ const clean=cleanName($('playerName').value);
+ if(!clean){$('nameStatus').textContent='Type a name first, then save it.';return;}
+ playerName=clean;$('playerName').value=clean;$('playerLabel').textContent=clean.toUpperCase();
+ try{localStorage.setItem('flappyJisuPlayerName',clean)}catch(e){}
+ $('nameStatus').textContent='Name saved! Your score will use this nickname.';loadBoard();
+});
+$('playerName').addEventListener('keydown',e=>{if(e.key==='Enter')$('saveName').click();});
+$('refreshBoard').addEventListener('click',loadBoard);
+let secretCount=0;
+$('secretButton').addEventListener('click',()=>{secretCount++;const msgs=['A tiny hint: try a few quick flaps, then glide.','The bird has a secret fan club. It is mostly crumbs.','Legend says a golden sparkle appears after a clean streak.','Psst... the real treasure is beating your own best.'];$('secretMessage').textContent=msgs[(secretCount-1)%msgs.length];if(secretCount%4===0){particles.push({x:W*.5,y:H*.3,vx:0,vy:-20,life:1,max:1,size:8});}});
+loadBoard();
+function playAudio(a){if(!soundOn)return;try{a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(()=>{});}catch(e){}}
+function toggleSound(){soundOn=!soundOn;$('soundToggle').textContent=soundOn?'♫':'♩';$('soundGame').textContent=soundOn?'♫ Sound':'♩ Muted';}
+$('soundToggle').addEventListener('click',toggleSound);$('soundGame').addEventListener('click',toggleSound);
+function openGame(){if(!playerName){$('nameStatus').textContent='Choose a nickname first if you want your scores labelled.';}layer.classList.add('active');layer.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';state='ready';resetRun();$('startOverlay').classList.add('show');$('pauseOverlay').classList.remove('show');$('overOverlay').classList.remove('show');resize();}
+function goHome(){stopLoop();layer.classList.remove('active');layer.setAttribute('aria-hidden','true');document.body.style.overflow='';state='home';}
+function resetRun(){stopLoop();score=0;pipes=[];particles=[];elapsed=0;shake=0;flash=0;bird={x:W*.22,y:H*.45,v:0,rot:0,r:15,w:Math.max(34,Math.min(46,W*.105)),h:Math.max(34,Math.min(46,W*.105)),started:false};$('score').textContent='0';$('hint').textContent='Tap / click / Space to flap';}
+function startRun(){resetRun();state='playing';bird.started=true;flap();$('startOverlay').classList.remove('show');$('pauseOverlay').classList.remove('show');$('overOverlay').classList.remove('show');last=performance.now();raf=requestAnimationFrame(loop);}
+function flap(){if(state!=='playing')return;bird.v=CFG.flap*Math.min(1.12,Math.max(.8,H/640));bird.rot=-.35;playAudio(flapSound);for(let i=0;i<7;i++)particles.push({x:bird.x-bird.w*.3,y:bird.y+(Math.random()-.5)*bird.h*.5,vx:-30-Math.random()*80,vy:(Math.random()-.5)*100,life:.35+Math.random()*.25,max:.6,size:2+Math.random()*3});}
+function pause(){if(state==='playing'){state='paused';stopLoop();$('pauseOverlay').classList.add('show');$('hint').textContent='Paused';}else if(state==='paused'){state='playing';$('pauseOverlay').classList.remove('show');last=performance.now();raf=requestAnimationFrame(loop);}}
+function endRun(){state='over';stopLoop();shake=7;flash=.28;playAudio(failSound);if(score>best){best=score;$('bestScore').textContent=best;try{localStorage.setItem('flappyJisuBest',String(best))}catch(e){}}$('finalMessage').textContent=`You scored ${score} ${score===1?'point':'points'}. ${score>=best&&score>0?'That was your best yet!':'Ready to give it another go?'}`;$('overOverlay').classList.add('show');$('hint').textContent='Run complete';submitScore();draw();}
+function stopLoop(){if(raf)cancelAnimationFrame(raf);raf=0;}
+function spawnPipe(){const margin=Math.max(70,H*.14),gap=Math.max(135,Math.min(190,H*.29));const min=margin,max=Math.max(min+1,H-groundH-margin-gap);const top=min+Math.random()*(max-min);pipes.push({x:W+8,top,gap,width:Math.max(48,Math.min(68,W*.14)),passed:false});}
+function collideCircleRect(cx,cy,r,x,y,w,h){const nx=Math.max(x,Math.min(cx,x+w)),ny=Math.max(y,Math.min(cy,y+h));return (cx-nx)**2+(cy-ny)**2<r*r;}
+function hitTest(){const r=bird.w*.31;if(bird.y+r>H-groundH||bird.y-r<0)return true;for(const p of pipes){if(collideCircleRect(bird.x,bird.y,r,p.x,0,p.width,p.top)||collideCircleRect(bird.x,bird.y,r,p.x,p.top+p.gap,p.width,H-groundH-(p.top+p.gap)))return true;}return false;}
+function update(dt){
+ elapsed+=dt;bird.v=Math.min(CFG.maxFall,bird.v+CFG.gravity*dt);bird.y+=bird.v*dt;bird.rot=Math.min(1.2,bird.rot+dt*2.1);
+ if(elapsed>CFG.spawn){elapsed=0;spawnPipe();}
+ for(let i=pipes.length-1;i>=0;i--){const p=pipes[i];p.x-=CFG.pipeSpeed*(W/420)*dt;if(!p.passed&&p.x+p.width<bird.x){p.passed=true;score++;$('score').textContent=score;flash=.12;for(let j=0;j<18;j++)particles.push({x:bird.x,y:bird.y,vx:(Math.random()-.5)*160,vy:(Math.random()-.5)*160,life:.45+Math.random()*.35,max:.8,size:2+Math.random()*4});}if(p.x+p.width< -5)pipes.splice(i,1);}
+ for(const c of clouds){c.x-=12*c.s*dt;if(c.x<-100){c.x=W+80;c.y=Math.random()*H*.65;}}
+ for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=70*dt;p.life-=dt;if(p.life<=0)particles.splice(i,1);}
+ if(flash>0)flash-=dt;if(shake>0)shake=Math.max(0,shake-30*dt);
+ if(hitTest())endRun();
+}
+function gradientSky(){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#65c8f1');g.addColorStop(.58,'#a6e5f6');g.addColorStop(1,'#e0f7e6');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ const sun=ctx.createRadialGradient(W*.78,H*.18,1,W*.78,H*.18,W*.24);sun.addColorStop(0,'#fff9d7aa');sun.addColorStop(1,'#fff9d700');ctx.fillStyle=sun;ctx.fillRect(0,0,W,H);
+}
+function drawCloud(x,y,s){ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.fillStyle='#ffffff70';ctx.beginPath();ctx.ellipse(0,0,30,10,0,0,Math.PI*2);ctx.ellipse(-13,-6,13,12,0,0,Math.PI*2);ctx.ellipse(1,-12,17,17,0,0,Math.PI*2);ctx.ellipse(17,-4,14,11,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+function drawHill(color,y,amp,offset){ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W+10;x+=10){const xx=x+offset;ctx.lineTo(x,y+Math.sin(xx*.008)*amp+Math.sin(xx*.019)*amp*.32);}ctx.lineTo(W,H);ctx.closePath();ctx.fill();}
+function drawPipe(p){const w=p.width;ctx.save();
+ const grad=ctx.createLinearGradient(p.x,0,p.x+w,0);grad.addColorStop(0,'#316f5c');grad.addColorStop(.18,'#63ba78');grad.addColorStop(.55,'#38885f');grad.addColorStop(1,'#245945');
+ function segment(y,h,img,top){if(h<=0)return;if(img.complete&&img.naturalWidth){ctx.drawImage(img,p.x,y,w,h);}else{ctx.fillStyle=grad;ctx.fillRect(p.x,y,w,h);ctx.fillStyle='#ffffff22';ctx.fillRect(p.x+5,y,4,h);ctx.fillStyle='#102e2a66';ctx.fillRect(p.x+w-5,y,5,h);}
+ // subtle edge lighting that doesn't replace the existing image
+ ctx.strokeStyle='#173e3b55';ctx.lineWidth=2;ctx.strokeRect(p.x+.5,y+.5,w-1,Math.max(0,h-1));}
+ if(pipeTopImg.complete&&pipeTopImg.naturalWidth)segment(0,p.top,pipeTopImg,true);else segment(0,p.top,null,true);
+ if(pipeBottomImg.complete&&pipeBottomImg.naturalWidth)segment(p.top+p.gap,H-groundH-(p.top+p.gap),pipeBottomImg,false);else segment(p.top+p.gap,H-groundH-(p.top+p.gap),null,false);
+ // Keep the source artwork; add a slight soft rim at each opening.
+ ctx.fillStyle='#d5f6b4';ctx.globalAlpha=.45;ctx.fillRect(p.x-2,p.top-3,w+4,3);ctx.fillRect(p.x-2,p.top+p.gap,w+4,3);ctx.restore();}
+function drawBird(){const w=bird.w,h=bird.h;ctx.save();ctx.translate(bird.x,bird.y);ctx.rotate(bird.rot);
+ ctx.shadowColor='#0b315855';ctx.shadowBlur=12;ctx.shadowOffsetY=5;
+ if(birdImg.complete&&birdImg.naturalWidth){ctx.drawImage(birdImg,-w/2,-h/2,w,h);}else{ctx.fillStyle='#f4d56b';ctx.beginPath();ctx.ellipse(0,0,w*.45,h*.38,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#f07e51';ctx.beginPath();ctx.moveTo(w*.25,0);ctx.lineTo(w*.55,5);ctx.lineTo(w*.25,9);ctx.fill();}
+ ctx.restore();}
+function drawGround(){const y=H-groundH;const g=ctx.createLinearGradient(0,y,0,H);g.addColorStop(0,'#b4e78a');g.addColorStop(.15,'#73c56d');g.addColorStop(1,'#347e5d');ctx.fillStyle=g;ctx.fillRect(0,y,W,groundH);ctx.fillStyle='#e6ffc4';ctx.fillRect(0,y,W,4);ctx.globalAlpha=.3;ctx.fillStyle='#1d694d';const offset=(performance.now()*.045)%(W/8);for(let x=-20-offset;x<W;x+=W/8){ctx.beginPath();ctx.moveTo(x,y+10);ctx.lineTo(x+14,y+10);ctx.lineTo(x+7,y+15);ctx.fill();}ctx.globalAlpha=1;}
+function draw(){
+ if(!W||!H)return;ctx.save();if(shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
+ gradientSky();for(const c of clouds)drawCloud(c.x,c.y,c.s);
+ drawHill('#9fd5b0',H*.69,H*.035,performance.now()*.018);drawHill('#6cb991',H*.78,H*.045,performance.now()*.035);
+ for(const p of pipes)drawPipe(p);drawGround();for(const p of particles){ctx.globalAlpha=Math.max(0,p.life/p.max);ctx.fillStyle=p.life>.4?'#f5ffbd':'#ffffff';ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;drawBird();
+ if(flash>0){ctx.fillStyle=`rgba(255,255,255,${Math.min(.24,flash)})`;ctx.fillRect(0,0,W,H);}
+ ctx.restore();
+}
+function loop(now){if(state!=='playing')return;const dt=Math.min(.033,Math.max(0,(now-last)/1000));last=now;update(dt);draw();if(state==='playing')raf=requestAnimationFrame(loop);}
+function idleLoop(now){if(state!=='home'&&state!=='ready')return;const dt=Math.min(.04,(now-(last||now))/1000);last=now;if(state==='home'){bird.y=H*.45+Math.sin(now*.002)*7;bird.rot=Math.sin(now*.0015)*.035;for(const c of clouds){c.x-=8*c.s*dt;if(c.x<-100)c.x=W+60;}}draw();raf=requestAnimationFrame(idleLoop);}
+function showHome(){goHome();$('bestScore').textContent=best;window.scrollTo({top:0,behavior:'smooth'});}
+$('playButton').addEventListener('click',openGame);$('startRun').addEventListener('click',startRun);$('retryButton').addEventListener('click',startRun);$('restartPaused').addEventListener('click',startRun);$('backHome').addEventListener('click',showHome);$('homeFromOver').addEventListener('click',showHome);$('exitButton').addEventListener('click',showHome);$('pauseButton').addEventListener('click',pause);$('resumeButton').addEventListener('click',pause);
+$('howButton').addEventListener('click',()=>{$('howSection').scrollIntoView({behavior:'smooth',block:'center'});});
+$('fullscreenHome').addEventListener('click',async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen();}catch(e){}});
+field.addEventListener('pointerdown',e=>{if(state==='playing'){e.preventDefault();flap();}},{passive:false});
+document.addEventListener('keydown',e=>{if(e.code==='Space'||e.code==='ArrowUp'){if(layer.classList.contains('active')){e.preventDefault();if(state==='playing')flap();else if(state==='ready')startRun();else if(state==='over')startRun();}else if(state==='home'){openGame();} }if(e.code==='KeyP'&&layer.classList.contains('active'))pause();if(e.code==='Escape'&&layer.classList.contains('active'))showHome();});
+window.addEventListener('resize',resize);window.addEventListener('orientationchange',()=>setTimeout(resize,180));
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='playing')pause();});
+const ro=typeof ResizeObserver!=='undefined'?new ResizeObserver(resize):null;if(ro)ro.observe(field);
+resize();state='home';last=performance.now();raf=requestAnimationFrame(idleLoop);
+})();
+</script>
 </body>
 </html>
-
-
-
